@@ -20,7 +20,7 @@ wss.on("connection", function connection(ws) {
       if (ws !== senderSocket) {
         return;
       }
-      console.log("offer offer");
+      console.log("sender send offer");
       receiverSocket?.send(
         JSON.stringify({ type: "createOffer", sdp: message.sdp })
       );
@@ -28,7 +28,7 @@ wss.on("connection", function connection(ws) {
       if (ws !== receiverSocket) {
         return;
       }
-      console.log("answer received");
+      console.log("receiver send answer");
       senderSocket?.send(
         JSON.stringify({ type: "createAnswer", sdp: message.sdp })
       );

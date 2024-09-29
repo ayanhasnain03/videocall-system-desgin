@@ -12,7 +12,7 @@ const Receiver = () => {
         const pc = new RTCPeerConnection();
         pc.setRemoteDescription(message.sdp);
         const answer = await pc.createAnswer();
-        pc.setLocalDescription(answer);
+        await pc.setLocalDescription(answer);
         socket.send(
           JSON.stringify({ type: "createAnswer", sdp: pc.localDescription })
         );

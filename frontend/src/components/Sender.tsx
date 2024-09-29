@@ -1,39 +1,38 @@
 import { useEffect, useState } from "react";
 
 const Sender = () => {
-  const [socket, setsocket] = useState<WebSocket | null>(null);
-
+  const [socket, setSocket] = useState<WebSocket | null>(null);
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8080");
+    //sender im sender
     socket.onopen = () => {
       socket.send(JSON.stringify({ type: "sender" }));
     };
+
+    setSocket(socket);
   }, []);
 
-  async function startSendingVideo() {
+  const startSendingVideo = async () => {
     if (!socket) return;
-    //create an offer
+    //create a peer connection
     const pc = new RTCPeerConnection();
+    //create an offer
     const offer = await pc.createOffer(); //sdp
-    pc.setLocalDescription(offer);
-    socket?.send(JSON.stringify({ type: "createOffer", sdp: offer.sdp }));
+    await pc.setLocalDescription(offer);
+    socket?.send(
+      JSON.stringify({ type: "createOffer", sdp: pc.localDescription })
+    );
     socket.onmessage = async (event) => {
       const data = JSON.parse(event.data);
       if (data.type === "createAnswer") {
         pc.setRemoteDescription(data.sdp);
       }
     };
-  }
+  };
+
   return (
     <div>
-      Sender
-      <button
-        onClick={() => {
-          startSendingVideo;
-        }}
-      >
-        Send Video
-      </button>
+      <button onClick={startSendingVideo}>Send</button>
     </div>
   );
 };
